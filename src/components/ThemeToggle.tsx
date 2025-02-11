@@ -1,26 +1,46 @@
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { toggleTheme } from "../features/theme/ThemeSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
 const ThemeToggle = () => {
-  const dispatch = useDispatch();
-  const theme = useSelector((state: RootState) => state.theme.theme);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return (
+        localStorage.theme === "dark" ||
+        (!("theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      );
+    }
+    return false;
+  });
 
   useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark"); // ✅ Add dark mode class
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.theme = "dark";
     } else {
-      document.documentElement.classList.remove("dark"); // ✅ Remove if light
+      document.documentElement.classList.remove("dark");
+      localStorage.theme = "light";
     }
-  }, [theme]); // Run effect whenever theme changes
+  }, [darkMode]);
 
   return (
     <button
-      onClick={() => dispatch(toggleTheme())}
-      className="px-4 py-2 rounded bg-gray-800 text-white dark:bg-gray-200 dark:text-black transition"
+      onClick={() => setDarkMode(!darkMode)}
+      className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+      aria-label="Toggle dark mode"
     >
-      {theme === "dark" ? "Light Mode" : "Dark Mode"}
+      <div className="relative w-5 h-5">
+        <Sun
+          className={`absolute transition-all duration-300 ${
+            darkMode ? "opacity-0 rotate-90" : "opacity-100 rotate-0"
+          } text-amber-500`}
+        />
+        <Moon
+          className={`absolute transition-all duration-300 ${
+            darkMode ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"
+          } text-slate-400`}
+        />
+      </div>
     </button>
   );
 };

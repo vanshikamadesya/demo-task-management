@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   darkMode: "class", // ✅ Use "class" instead of "media"
   content: [
     "./index.html",

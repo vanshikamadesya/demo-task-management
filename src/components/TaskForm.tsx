@@ -26,7 +26,7 @@ interface TaskFormProps {
 
 const TaskForm = ({ task, onClose }: TaskFormProps) => {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false); // Full-screen loader state
+  const [loading, setLoading] = useState(false);
 
   return (
     <Formik<Task>
@@ -45,7 +45,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
               toast.success("Task added successfully!");
             }
             resolve();
-          }, 1500); // Simulated API delay (1.5s)
+          }, 1500);
         })
           .then(() => {
             resetForm();
@@ -59,7 +59,7 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
 
         return (
           <>
-            {/* Full-Screen Loader Overlay */}
+            {/* Full-Screen Loader */}
             {loading && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                 <div className="flex flex-col items-center">
@@ -70,57 +70,64 @@ const TaskForm = ({ task, onClose }: TaskFormProps) => {
             )}
 
             {/* Task Form */}
-            <Form className="p-4 bg-white dark:bg-gray-800 rounded shadow-md space-y-4 w-full max-w-2xl mx-auto relative">
-              {/* Title Field */}
-              <div className="mb-4">
-                <Field
-                  type="text"
-                  name="title"
-                  className="w-full p-2 border rounded-md dark:bg-gray-700 dark:text-white"
-                  placeholder="Enter task title"
-                />
-                {errors.title && touched.title && (
-                  <p className="text-red-500 text-sm mt-1">{errors.title}</p>
-                )}
-              </div>
+            <Form className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-900/30 space-y-5 border border-gray-200 dark:border-gray-700">
+
+{/* Title Field */}
+<div>
+  <Field
+    type="text"
+    name="title"
+    className="w-full p-3 border rounded-md bg-white dark:bg-white text-black dark:text-black placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 dark:border-gray-600"
+    placeholder="Enter task title"
+  />
+  {errors.title && touched.title && (
+    <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+  )}
+</div>
 
               {/* Description Field */}
-              <div className="mb-6">
+              <div>
                 <TaskEditor
                   value={values.description}
                   onChange={(content) => setFieldValue("description", content)}
-                  className="min-h-[150px] dark:border-gray-600"
+                  className="min-h-[150px] bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-md"
                 />
                 {errors.description && touched.description && (
                   <p className="text-red-500 text-sm mt-1">{errors.description}</p>
                 )}
               </div>
 
-              {/* Status Dropdown */}
-              <div className="relative">
-                <label className="block text-sm">Status</label>
-                <Select.Root value={values.status} onValueChange={(value) => setFieldValue("status", value)}>
-                  <Select.Trigger className="w-full p-2 border rounded flex items-center justify-between dark:bg-gray-700 dark:text-white">
-                    <Select.Value placeholder="Select Status" />
-                    <ChevronDown className="w-4 h-4" />
-                  </Select.Trigger>
-                  <Select.Content className="border rounded shadow-md bg-white dark:bg-gray-800">
-                    {["To-Do", "In Progress", "Done"].map((status) => (
-                      <Select.Item key={status} value={status} className="p-2 flex justify-between items-center cursor-pointer">
-                        <Select.ItemText>{status}</Select.ItemText>
-                        {values.status === status && <Check className="w-4 h-4" />}
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Root>
-                {errors.status && touched.status && <p className="text-red-500 text-sm">{errors.status}</p>}
-              </div>
+{/* Status Dropdown */}
+<div>
+  <label className="block text-sm text-gray-900 dark:text-gray-200 mb-1">
+    Status
+  </label>
+  <Select.Root value={values.status} onValueChange={(value) => setFieldValue("status", value)}>
+    <Select.Trigger className="w-full p-3 border rounded-md flex items-center justify-between bg-white dark:bg-white text-black dark:text-black border-gray-300 dark:border-gray-600">
+      <Select.Value placeholder="Select Status" />
+      <ChevronDown className="w-4 h-4" />
+    </Select.Trigger>
+    <Select.Content className="border rounded shadow-md bg-white dark:bg-white dark:border-gray-700">
+      {["To-Do", "In Progress", "Done"].map((status) => (
+        <Select.Item
+          key={status}
+          value={status}
+          className="p-2 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-200 text-black dark:text-black"
+        >
+          <Select.ItemText>{status}</Select.ItemText>
+          {values.status === status && <Check className="w-4 h-4 text-blue-500" />}
+        </Select.Item>
+      ))}
+    </Select.Content>
+  </Select.Root>
+  {errors.status && touched.status && <p className="text-red-500 text-sm">{errors.status}</p>}
+</div>
 
               {/* Submit & Cancel Buttons */}
-              <div className="flex justify-between mt-4">
+              <div className="flex justify-between">
                 <button
                   type="submit"
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center"
+                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-4 py-2 rounded"
                   disabled={loading}
                 >
                   {loading ? (
