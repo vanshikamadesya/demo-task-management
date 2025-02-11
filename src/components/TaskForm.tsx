@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../redux/store";
 import TaskEditor from "./TaskEditor";
 import { toast } from "react-toastify";
+import { FaSpinner } from "react-icons/fa";
 
 // Validation Schema using Yup
 const taskSchema = Yup.object().shape({
@@ -25,7 +26,7 @@ const TaskForm = () => {
   const { id } = useParams(); // Get task ID from URL
   const tasks = useSelector((state: RootState) => state.task.tasks);
   const [loading, setLoading] = useState(false);
-  
+
   // Find the task to edit based on the ID
   const taskToEdit = id ? tasks.find((task) => task.id === id) : null;
 
@@ -36,7 +37,9 @@ const TaskForm = () => {
       </h2>
 
       <Formik<Task>
-        initialValues={taskToEdit || { title: "", description: "", status: "To-Do", id: "" }}
+        initialValues={
+          taskToEdit || { title: "", description: "", status: "To-Do", id: "" }
+        }
         validationSchema={taskSchema}
         onSubmit={(values: Task, { resetForm }: FormikHelpers<Task>) => {
           setLoading(true);
@@ -86,7 +89,9 @@ const TaskForm = () => {
                   className="min-h-[150px] bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-900 dark:text-white rounded-md p-3"
                 />
                 {errors.description && touched.description && (
-                  <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.description}
+                  </p>
                 )}
               </div>
 
@@ -117,13 +122,21 @@ const TaskForm = () => {
                   className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : taskToEdit ? "Update Task" : "Add Task"}
+                  {loading ? (
+                    <>
+                      <FaSpinner className="animate-spin" /> Processing...
+                    </>
+                  ) : taskToEdit ? (
+                    "Update Task"
+                  ) : (
+                    "Add Task"
+                  )}
                 </button>
 
                 <button
                   type="button"
                   onClick={() => navigate("/")}
-                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded px-4 py-2"
+                  className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded px-4 py-2"
                 >
                   Cancel
                 </button>
