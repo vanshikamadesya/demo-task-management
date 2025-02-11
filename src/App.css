@@ -1,0 +1,16 @@
+select {
+  background-color: white;
+  color: black;
+}
+
+@media (prefers-color-scheme: dark) {
+  select {
+    background-color: #1f2937 !important; /* Dark gray */
+    color: white !important;
+  }
+  
+  option {
+    background-color: #1f2937 !important;
+    color: white !important;
+  }
+}
