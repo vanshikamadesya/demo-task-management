@@ -6,8 +6,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import ThemeToggle from "./components/ThemeToggle";
 import { useEffect } from "react";
-import AddTask from "./pages/AddTask";
 import { ToastContainer } from "react-toastify";
+import TaskForm from "./components/TaskForm";
 
 function App() {
   const theme = useSelector((state: RootState) => state.theme.theme);
@@ -30,7 +30,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/task/:id" element={<TaskDetail />} />
-          <Route path="/add-task" element={<AddTask />} />  
+          <Route path="/add-task" element={<TaskForm />} /> 
+          <Route path="/edit-task/:id" element={<TaskForm />} />
           </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={2000} />
