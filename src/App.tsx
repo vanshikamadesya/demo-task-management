@@ -2,12 +2,13 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import TaskDetail from "./pages/TaskDetail";
-import { useSelector } from "react-redux";
-import { RootState } from "./redux/store";
-import ThemeToggle from "./components/ThemeToggle";
-import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import TaskForm from "./components/TaskForm";
+import { useSelector } from "react-redux";
+import { RootState } from "./redux/store";
+import { useEffect } from "react";
+import ThemeToggle from "./components/ThemeToggle";
+import { Link } from "react-router-dom";
 
 function App() {
   const theme = useSelector((state: RootState) => state.theme.theme);
@@ -21,18 +22,27 @@ function App() {
   }, [theme]);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 text-black dark:text-white">
-      <header className="p-4 flex justify-between items-center shadow bg-white dark:bg-gray-900 dark:text-white">
+    <div>
+      <header className="p-4 flex justify-between items-center shadow bg-white dark:bg-gray-700 dark:text-white">
         <h1 className="text-xl md:text-2xl font-bold">Task Manager</h1>
-        <ThemeToggle />
+        <div className="flex items-center space-x-4">
+          <Link
+            to="/add-task"
+            className="bg-blue-500 px-4 py-2 rounded text-white hover:bg-blue-700"
+          >
+            + Add New Task
+          </Link>
+          <ThemeToggle />
+        </div>
       </header>
+
       <main className="p-4 md:p-6 max-w-5xl mx-auto">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/task/:id" element={<TaskDetail />} />
-          <Route path="/add-task" element={<TaskForm />} /> 
+          <Route path="/add-task" element={<TaskForm />} />
           <Route path="/edit-task/:id" element={<TaskForm />} />
-          </Routes>
+        </Routes>
       </main>
       <ToastContainer position="top-right" autoClose={2000} />
     </div>

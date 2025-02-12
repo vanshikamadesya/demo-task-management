@@ -14,7 +14,7 @@ const TaskItem = ({ task, onEdit }: TaskItemProps) => {
   const dispatch = useDispatch();
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 w-full max-w-sm border border-gray-300 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg p-4 w-full max-w-sm border border-gray-300 dark:border-gray-700">
       {/* Task Title & Status */}
       <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">{task.title}</h3>
       <p className="text-gray-600 dark:text-gray-300">{task.status}</p>

@@ -113,9 +113,9 @@ html, body {
 
 @layer base {
   body {
-    @apply bg-gray-50 dark:bg-gray-900 transition-colors duration-200;
+    @apply bg-gray-100 dark:bg-gray-900;
   }
-  
+    
   .ProseMirror {
     @apply dark:bg-gray-800 dark:text-gray-200;
   }

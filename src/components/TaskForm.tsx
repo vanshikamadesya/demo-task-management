@@ -31,8 +31,8 @@ const TaskForm = () => {
   const taskToEdit = id ? tasks.find((task) => task.id === id) : null;
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white dark:bg-gray-900 rounded-lg shadow-xl">
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-5">
+    <div className="max-w-2xl mx-auto mt-2 p-6 bg-white dark:bg-gray-900 rounded-lg shadow-xl">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 ">
         {taskToEdit ? "Edit Task" : "Add Task"}
       </h2>
 
@@ -67,13 +67,13 @@ const TaskForm = () => {
           const { setFieldValue, errors, touched, values } = formik;
 
           return (
-            <Form className="space-y-5">
+            <Form className="space-y-5 dark:border rounded-2xl p-5 ">
               {/* Title Field */}
               <div>
                 <Field
                   type="text"
                   name="title"
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 dark:border-gray-700"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 dark:border-gray-700"
                   placeholder="Enter task title"
                 />
                 {errors.title && touched.title && (
@@ -86,7 +86,7 @@ const TaskForm = () => {
                 <TaskEditor
                   value={values.description}
                   onChange={(content) => setFieldValue("description", content)}
-                  className="min-h-[150px] bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-900 dark:text-white rounded-md p-3"
+                  className="min-h-[150px] bg-white dark:bg-gray-700 border dark:border-gray-800 text-gray-900 dark:text-white rounded-md p-3"
                 />
                 {errors.description && touched.description && (
                   <p className="text-red-500 text-sm mt-1">
@@ -104,7 +104,7 @@ const TaskForm = () => {
                   name="status"
                   value={values.status}
                   onChange={(e) => setFieldValue("status", e.target.value)}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
                 >
                   <option value="To-Do">To-Do</option>
                   <option value="In Progress">In Progress</option>
@@ -136,7 +136,7 @@ const TaskForm = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/")}
-                  className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded px-4 py-2"
+                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded px-4 py-2"
                 >
                   Cancel
                 </button>
