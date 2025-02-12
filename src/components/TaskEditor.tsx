@@ -9,19 +9,22 @@ interface TaskEditorProps {
 
 const TaskEditor = ({ value, onChange, className }: TaskEditorProps) => {
   return (
-    <div
-      className={`${className} bg-white dark:bg-white border border-gray-300 dark:border-gray-600 rounded-lg`}
-    >
+    <div className={`${className} border border-gray-300 dark:border-gray-600 rounded-lg w-full`}>
       <ReactQuill
         theme="snow"
         value={value}
         onChange={onChange}
-        placeholder="Enter task description..."
-        className="!min-h-[150px] [&_.ql-editor]:!min-h-[150px] [&_.ql-editor]:p-3 [&_.ql-editor]:bg-white [&_.ql-editor]:dark:bg-white [&_.ql-editor]:text-black [&_.ql-editor]:dark:text-black [&_.ql-toolbar]:dark:bg-gray-200 [&_.ql-toolbar]:dark:border-gray-400"
+        className="!h-auto [&_.ql-editor]:!min-h-[150px] [&_.ql-editor]:!h-auto
+                   [&_.ql-editor]:p-3 [&_.ql-editor]:bg-white [&_.ql-editor]:text-black 
+                   dark:[&_.ql-editor]:bg-gray-800 dark:[&_.ql-editor]:text-white 
+                   dark:[&_.ql-editor]::placeholder:text-gray-400 
+                   [&_.ql-toolbar]:bg-gray-100 [&_.ql-toolbar]:border-gray-300 
+                   dark:[&_.ql-toolbar]:bg-gray-700 dark:[&_.ql-toolbar]:border-gray-600 
+                   dark:[&_.ql-toolbar] button:hover:bg-gray-600 
+                   dark:[&_.ql-picker]:text-white dark:[&_.ql-stroke]:stroke-white border"
         modules={{
           toolbar: [
             ["bold", "italic", "underline", "strike"],
-            ["blockquote", "code-block"],
             [{ header: 1 }, { header: 2 }],
             [{ list: "ordered" }, { list: "bullet" }],
             ["link", "image"],
@@ -29,9 +32,46 @@ const TaskEditor = ({ value, onChange, className }: TaskEditorProps) => {
           ],
         }}
       />
+      <style>
+        {`
+          .ql-editor::placeholder {
+            color: #9ca3af !important; /* Light gray */
+          }
+          .dark .ql-editor::placeholder {
+            color: #d1d5db !important; /* Slightly darker gray for dark mode */
+          }
+          .dark .ql-toolbar button svg {
+            fill: white !important; /* Ensures icons are visible */
+            stroke: white !important;
+          }
+          .dark .ql-toolbar button:hover {
+            background-color: #374151 !important; /* Slight hover effect */
+          }
+          .dark .ql-picker-label, 
+          .dark .ql-picker-options {
+            color: white !important; /* Dropdown color fix */
+          }
+
+          /* Fix Editor Splitting Issue */
+          .ql-container {
+            display: flex;
+            flex-direction: column;
+            height: auto !important;
+          }
+
+          /* Responsive Fix for Toolbar */
+          @media (max-width: 640px) {
+            .ql-toolbar {
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: center;
+              gap: 4px;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };
 
 export default TaskEditor;
-  

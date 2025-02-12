@@ -3,15 +3,15 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { addTask, updateTask } from "../features/task/TaskSlice";
 import { v4 as uuidv4 } from "uuid";
-import { Task } from "../features/task/TaskType";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../redux/store";
 import TaskEditor from "./TaskEditor";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
+import { Task } from "../features/task/TaskSlice";
 
-// Validation Schema using Yup
+// ✅ Validation Schema
 const taskSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   description: Yup.string().required("Description is required"),
@@ -23,34 +23,45 @@ const taskSchema = Yup.object().shape({
 const TaskForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams(); // Get task ID from URL
+  const { id } = useParams();
   const tasks = useSelector((state: RootState) => state.task.tasks);
-  const [loading, setLoading] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  // Find the task to edit based on the ID
+  const [loading, setLoading] = useState(false);
   const taskToEdit = id ? tasks.find((task) => task.id === id) : null;
 
+  // ✅ Debugging logs
+  console.log("Current User:", user);
+
   return (
-    <div className="max-w-2xl mx-auto mt-2 p-6 bg-white dark:bg-gray-900 rounded-lg shadow-xl">
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 ">
+    <div className="w-full max-w-3xl mx-auto p-4 sm:p-6 md:p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-5 text-center">
         {taskToEdit ? "Edit Task" : "Add Task"}
       </h2>
 
       <Formik<Task>
-        initialValues={
-          taskToEdit || { title: "", description: "", status: "To-Do", id: "" }
-        }
+        initialValues={{
+          title: taskToEdit?.title || "",
+          description: taskToEdit?.description || "",
+          status: taskToEdit?.status || "To-Do",
+          id: taskToEdit?.id || uuidv4(),  // ✅ Ensure id is always present
+          userId: taskToEdit?.userId || user?.id || "", // ✅ Ensure userId is assigned correctly
+        }}
         validationSchema={taskSchema}
         onSubmit={(values: Task, { resetForm }: FormikHelpers<Task>) => {
-          setLoading(true);
+          if (!user?.id) {
+            toast.error("You must be logged in to add or edit a task.");
+            return;
+          }
 
+          setLoading(true);
           new Promise<void>((resolve) => {
             setTimeout(() => {
               if (taskToEdit) {
-                dispatch(updateTask(values));
+                dispatch(updateTask({ ...values, userId: user.id })); // ✅ Ensure userId persists on update
                 toast.success("Task updated successfully!");
               } else {
-                dispatch(addTask({ ...values, id: uuidv4() }));
+                dispatch(addTask({ ...values, id: uuidv4(), userId: user.id })); // ✅ Correctly assigns id
                 toast.success("Task added successfully!");
               }
               resolve();
@@ -58,7 +69,7 @@ const TaskForm = () => {
           })
             .then(() => {
               resetForm();
-              navigate("/"); // Redirect to task list page
+              navigate("/");
             })
             .finally(() => setLoading(false));
         }}
@@ -67,13 +78,16 @@ const TaskForm = () => {
           const { setFieldValue, errors, touched, values } = formik;
 
           return (
-            <Form className="space-y-5 dark:border rounded-2xl p-5 ">
-              {/* Title Field */}
+            <Form className="space-y-5">
+              {/* Title */}
               <div>
+                <label className="block text-gray-900 dark:text-gray-200 mb-2 font-semibold">
+                  Title
+                </label>
                 <Field
                   type="text"
                   name="title"
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300 dark:border-gray-700"
+                  className="w-full p-2 sm:p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter task title"
                 />
                 {errors.title && touched.title && (
@@ -81,12 +95,15 @@ const TaskForm = () => {
                 )}
               </div>
 
-              {/* Description Field */}
+              {/* Description */}
               <div>
+                <label className="block text-gray-900 dark:text-gray-200 mb-2 font-semibold">
+                  Description
+                </label>
                 <TaskEditor
                   value={values.description}
                   onChange={(content) => setFieldValue("description", content)}
-                  className="min-h-[150px] bg-white dark:bg-gray-700 border dark:border-gray-800 text-gray-900 dark:text-white rounded-md p-3"
+                  className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md"
                 />
                 {errors.description && touched.description && (
                   <p className="text-red-500 text-sm mt-1">
@@ -97,14 +114,14 @@ const TaskForm = () => {
 
               {/* Status Dropdown */}
               <div>
-                <label className="block text-sm text-gray-900 dark:text-gray-200 mb-1">
+                <label className="block text-gray-900 dark:text-gray-200 mb-2 font-semibold">
                   Status
                 </label>
                 <select
                   name="status"
                   value={values.status}
                   onChange={(e) => setFieldValue("status", e.target.value)}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                 >
                   <option value="To-Do">To-Do</option>
                   <option value="In Progress">In Progress</option>
@@ -115,11 +132,11 @@ const TaskForm = () => {
                 )}
               </div>
 
-              {/* Submit & Cancel Buttons */}
-              <div className="flex justify-between">
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
                 <button
                   type="submit"
-                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+                  className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? (
@@ -136,7 +153,7 @@ const TaskForm = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/")}
-                  className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded px-4 py-2"
+                  className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded px-4 py-2"
                 >
                   Cancel
                 </button>

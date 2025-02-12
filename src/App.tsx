@@ -1,5 +1,4 @@
-import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import TaskDetail from "./pages/TaskDetail";
 import { ToastContainer } from "react-toastify";
@@ -7,11 +6,15 @@ import TaskForm from "./components/TaskForm";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import { useEffect } from "react";
-import ThemeToggle from "./components/ThemeToggle";
-import { Link } from "react-router-dom";
+import Header from "./components/Header"; // ✅ Import Header
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
   const theme = useSelector((state: RootState) => state.theme.theme);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (theme === "dark") {
@@ -21,29 +24,35 @@ function App() {
     }
   }, [theme]);
 
+  useEffect(() => {
+    if (!isAuthenticated && !['/login', '/register'].includes(location.pathname)) {
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate, location.pathname]);
+
   return (
     <div>
-      <header className="p-4 flex justify-between items-center shadow bg-white dark:bg-gray-700 dark:text-white">
-        <h1 className="text-xl md:text-2xl font-bold">Task Manager</h1>
-        <div className="flex items-center space-x-4">
-          <Link
-            to="/add-task"
-            className="bg-blue-500 px-4 py-2 rounded text-white hover:bg-blue-700"
-          >
-            + Add New Task
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      {/* ✅ Use the Header component */}
+      <Header />
 
       <main className="p-4 md:p-6 max-w-5xl mx-auto">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/task/:id" element={<TaskDetail />} />
-          <Route path="/add-task" element={<TaskForm />} />
-          <Route path="/edit-task/:id" element={<TaskForm />} />
+          {isAuthenticated ? (
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="/task/:id" element={<TaskDetail />} />
+              <Route path="/add-task" element={<TaskForm />} />
+              <Route path="/edit-task/:id" element={<TaskForm />} />
+            </>
+          ) : (
+            <>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </>
+          )}
         </Routes>
       </main>
+
       <ToastContainer position="top-right" autoClose={2000} />
     </div>
   );
