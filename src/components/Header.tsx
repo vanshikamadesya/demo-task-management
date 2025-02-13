@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { logout } from "../features/auth/authSlice";
-import { ChevronDown, LogOut } from "lucide-react";
+import {  LogOut } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -45,18 +47,15 @@ const Header = () => {
 
             {/* User Dropdown */}
             <div className="relative">
+              {/* Clickable Username (Avatar) */}
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center space-x-2"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white text-lg font-semibold"
               >
-                {/* Circular Avatar */}
-                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white text-lg font-semibold">
-                  {userInitial}
-                </div>
-                <ChevronDown size={20} />
+                {userInitial}
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown Menu (Logout) */}
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border dark:border-gray-600 shadow-md rounded-md">
                   <button

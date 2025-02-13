@@ -14,10 +14,10 @@ const TaskEditor = ({ value, onChange, className }: TaskEditorProps) => {
         theme="snow"
         value={value}
         onChange={onChange}
-        className="!h-auto [&_.ql-editor]:!min-h-[150px] [&_.ql-editor]:!h-auto
-                   [&_.ql-editor]:p-3 [&_.ql-editor]:bg-white [&_.ql-editor]:text-black 
+        className="!h-auto [&_.ql-editor]:!min-h-[150px] [&_.ql-editor]:!max-h-[300px] 
+                   [&_.ql-editor]:overflow-y-auto [&_.ql-editor]:p-3 
+                   [&_.ql-editor]:bg-white [&_.ql-editor]:text-black 
                    dark:[&_.ql-editor]:bg-gray-800 dark:[&_.ql-editor]:text-white 
-                   dark:[&_.ql-editor]::placeholder:text-gray-400 
                    [&_.ql-toolbar]:bg-gray-100 [&_.ql-toolbar]:border-gray-300 
                    dark:[&_.ql-toolbar]:bg-gray-700 dark:[&_.ql-toolbar]:border-gray-600 
                    dark:[&_.ql-toolbar] button:hover:bg-gray-600 
@@ -34,32 +34,38 @@ const TaskEditor = ({ value, onChange, className }: TaskEditorProps) => {
       />
       <style>
         {`
+          .ql-editor {
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto !important; /* Scrollbar when content overflows */
+          }
+
           .ql-editor::placeholder {
             color: #9ca3af !important; /* Light gray */
           }
           .dark .ql-editor::placeholder {
             color: #d1d5db !important; /* Slightly darker gray for dark mode */
           }
+
           .dark .ql-toolbar button svg {
-            fill: white !important; /* Ensures icons are visible */
+            fill: white !important;
             stroke: white !important;
           }
           .dark .ql-toolbar button:hover {
-            background-color: #374151 !important; /* Slight hover effect */
-          }
-          .dark .ql-picker-label, 
-          .dark .ql-picker-options {
-            color: white !important; /* Dropdown color fix */
+            background-color: #374151 !important;
           }
 
-          /* Fix Editor Splitting Issue */
+          .dark .ql-picker-label, 
+          .dark .ql-picker-options {
+            color: white !important;
+          }
+
+          /* Prevent Editor Expansion Issue */
           .ql-container {
-            display: flex;
-            flex-direction: column;
             height: auto !important;
           }
 
-          /* Responsive Fix for Toolbar */
+          /* Fix Toolbar Overflow on Small Screens */
           @media (max-width: 640px) {
             .ql-toolbar {
               display: flex;

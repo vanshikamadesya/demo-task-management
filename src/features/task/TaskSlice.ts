@@ -33,6 +33,9 @@ const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
+    setTasks:(state, action) =>{
+      state.tasks = action.payload;
+    },
     addTask: (state, action: PayloadAction<Task>) => {
       // Get the logged-in user from localStorage (or Redux state)
       const storedUser = localStorage.getItem("user");
@@ -68,5 +71,5 @@ const taskSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { addTask, updateTask, deleteTask } = taskSlice.actions;
+export const { setTasks, addTask, updateTask, deleteTask } = taskSlice.actions;
 export default taskSlice.reducer;

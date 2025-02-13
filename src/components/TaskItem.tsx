@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux";
 import * as Dialog from "@radix-ui/react-dialog";
 import { deleteTask } from "../features/task/TaskSlice";
-import { Task } from "../features/task/TaskType";
 import { Link } from "react-router-dom";
 import { Eye, Edit, Trash2 } from "lucide-react";
+import { Task } from "../features/task/TaskSlice";
 
 interface TaskItemProps {
   task: Task;
