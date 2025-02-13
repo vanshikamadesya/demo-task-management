@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { logout } from "../features/auth/authSlice";
-import {  LogOut } from "lucide-react";
+import { LogOut, User2 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
@@ -13,28 +13,48 @@ const Header = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Close dropdown when user logs out
+
   const handleLogout = () => {
     setDropdownOpen(false);
     dispatch(logout());
     navigate("/login");
   };
 
-  // ✅ Close dropdown when authentication state changes
   useEffect(() => {
     setDropdownOpen(false);
   }, [isAuthenticated]);
-
-  // Extract first letter of username (fallback to "?")
-  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "?";
 
   return (
     <header className="p-4 flex justify-between items-center shadow bg-white dark:bg-gray-700 dark:text-white">
       <h1 className="text-xl md:text-2xl font-bold">Task Manager</h1>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 gap-4">
+        {!isAuthenticated && location.pathname === "/login" && (
+          <Link
+            to="/register"
+            className="bg-blue-500 px-4 py-2 rounded text-white hover:bg-blue-700"
+          >
+            Register
+          </Link>
+        )}
+
+        {!isAuthenticated && location.pathname === "/register" && (
+          <Link
+            to="/login"
+            className="bg-blue-500 px-4 py-2 rounded text-white hover:bg-blue-700"
+          >
+            Login
+          </Link>
+        )}
+
+        {!isAuthenticated &&
+          (location.pathname === "/login" ||
+            location.pathname === "/register") && <ThemeToggle />}
+
         {isAuthenticated && (
           <>
             <Link
@@ -45,22 +65,25 @@ const Header = () => {
             </Link>
             <ThemeToggle />
 
-            {/* User Dropdown */}
-            <div className="relative">
-              {/* Clickable Username (Avatar) */}
-              <button
+            {/* User Profile Section */}
+            <div className="relative" ref={dropdownRef}>
+              {/* User Icon */}
+              <div
+                className="flex items-center cursor-pointer p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white text-lg font-semibold"
               >
-                {userInitial}
-              </button>
+                <User2 size={28} className="text-gray-800 dark:text-gray-200" />
+              </div>
 
-              {/* Dropdown Menu (Logout) */}
+              {/* Dropdown Menu */}
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border dark:border-gray-600 shadow-md rounded-md">
+                <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-700 border dark:border-gray-600 shadow-md rounded-md">
+                  <div className="px-4 py-2 text-gray-900 dark:text-white font-medium">
+                    {user?.name || "User"}
+                  </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600"
+                    className="flex items-center w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-400"
                   >
                     <LogOut size={18} className="mr-2" />
                     Logout
@@ -68,6 +91,7 @@ const Header = () => {
                 </div>
               )}
             </div>
+
           </>
         )}
       </div>

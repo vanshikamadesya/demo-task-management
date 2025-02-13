@@ -9,6 +9,7 @@ import { RootState } from "../redux/store";
 import TaskEditor from "./TaskEditor";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
+import { X } from "lucide-react";
 import { Task } from "../features/task/TaskSlice";
 
 // ✅ Validation Schema
@@ -30,11 +31,16 @@ const TaskForm = () => {
   const [loading, setLoading] = useState(false);
   const taskToEdit = id ? tasks.find((task) => task.id === id) : null;
 
-  // ✅ Debugging logs
-  console.log("Current User:", user);
-
   return (
-    <div className="w-full max-w-3xl mx-auto p-4 sm:p-6 md:p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div className="w-full max-w-3xl mx-auto p-4 sm:p-6 md:p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg relative">
+      {/* X Icon to Close Form */}
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-4 right-4 text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400"
+      >
+        <X size={24} />
+      </button>
+
       <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-5 text-center">
         {taskToEdit ? "Edit Task" : "Add Task"}
       </h2>
@@ -44,8 +50,8 @@ const TaskForm = () => {
           title: taskToEdit?.title || "",
           description: taskToEdit?.description || "",
           status: taskToEdit?.status || "To-Do",
-          id: taskToEdit?.id || uuidv4(),  // ✅ Ensure id is always present
-          userId: taskToEdit?.userId || user?.id || "", // ✅ Ensure userId is assigned correctly
+          id: taskToEdit?.id || uuidv4(),
+          userId: taskToEdit?.userId || user?.id || "",
         }}
         validationSchema={taskSchema}
         onSubmit={(values: Task, { resetForm }: FormikHelpers<Task>) => {
@@ -58,10 +64,10 @@ const TaskForm = () => {
           new Promise<void>((resolve) => {
             setTimeout(() => {
               if (taskToEdit) {
-                dispatch(updateTask({ ...values, userId: user.id })); // ✅ Ensure userId persists on update
+                dispatch(updateTask({ ...values, userId: user.id }));
                 toast.success("Task updated successfully!");
               } else {
-                dispatch(addTask({ ...values, id: uuidv4(), userId: user.id })); // ✅ Correctly assigns id
+                dispatch(addTask({ ...values, id: uuidv4(), userId: user.id }));
                 toast.success("Task added successfully!");
               }
               resolve();
@@ -103,7 +109,7 @@ const TaskForm = () => {
                 <TaskEditor
                   value={values.description}
                   onChange={(content) => setFieldValue("description", content)}
-                  className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md"
+                  className="border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md"
                 />
                 {errors.description && touched.description && (
                   <p className="text-red-500 text-sm mt-1">
@@ -132,32 +138,22 @@ const TaskForm = () => {
                 )}
               </div>
 
-              {/* Buttons */}
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <FaSpinner className="animate-spin" /> Processing...
-                    </>
-                  ) : taskToEdit ? (
-                    "Update Task"
-                  ) : (
-                    "Add Task"
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => navigate("/")}
-                  className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded px-4 py-2"
-                >
-                  Cancel
-                </button>
-              </div>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <FaSpinner className="animate-spin" /> Processing...
+                  </>
+                ) : taskToEdit ? (
+                  "Update Task"
+                ) : (
+                  "Add Task"
+                )}
+              </button>
             </Form>
           );
         }}

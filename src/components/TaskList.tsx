@@ -28,7 +28,6 @@ const TaskList = () => {
   const tasksPerPage = 3;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -39,8 +38,6 @@ const TaskList = () => {
         const storedTasks = localStorage.getItem("tasks");
         const parsedTasks = storedTasks ? JSON.parse(storedTasks) : [];
         dispatch(setTasks(parsedTasks));
-      } catch {
-        setError("Failed to load tasks. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -113,24 +110,9 @@ const TaskList = () => {
     doc.save("tasks.pdf");
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8 text-red-500 dark:text-red-400">
-        {error}
-      </div>
-    );
-  }
-
   return (
     <div className="w-full space-y-6 px-4 sm:px-6 lg:px-8 mx-auto">
+      {/* Task Filters (Always Visible) */}
       <TaskFilters
         onFilterChange={setFilteredStatus}
         onSearchChange={setSearchTerm}
@@ -141,11 +123,16 @@ const TaskList = () => {
         onExportCSV={exportToCSV}
         onExportPDF={exportToPDF}
       />
-
-      <div className="py-10"></div> {/* Added space between TaskFilters and TaskItem */}
-
-      {paginatedTasks.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full  ">
+      <div className="py-12"></div>{" "}
+      {/* Added space between TaskFilters and TaskItem */}
+      <div className="py-1"></div>
+      {/* Task Items Section */}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <FaSpinner className="animate-spin text-4xl text-blue-500" />
+        </div>
+      ) : paginatedTasks.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {paginatedTasks.map((task) => (
             <TaskItem
               key={task.id}
@@ -159,23 +146,36 @@ const TaskList = () => {
           No tasks available.
         </p>
       )}
-
-      {totalPages > 1 && (
+      {/* Hide Pagination while loading */}
+      {/* Pagination Section */}
+      {!isLoading && totalPages > 1 && (
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 py-8">
           <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            className="px-4 py-2 rounded-md w-full sm:w-auto text-sm sm:text-base bg-blue-500 text-white hover:bg-blue-600 transition"
+            disabled={currentPage <= 1} // Ensures the Previous button is disabled on first page
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            className={`px-4 py-2 rounded-md w-full sm:w-auto text-sm sm:text-base 
+      ${
+        currentPage <= 1
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-500 hover:bg-blue-600 text-white transition"
+      }`}
           >
             Previous
           </button>
+
           <span className="text-gray-900 dark:text-white text-sm sm:text-base">
             Page {currentPage} of {totalPages}
           </span>
+
           <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            className="px-4 py-2 rounded-md w-full sm:w-auto text-sm sm:text-base bg-blue-500 text-white hover:bg-blue-600 transition"
+            disabled={currentPage >= totalPages} // Disables the Next button on last page
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            className={`px-4 py-2 rounded-md w-full sm:w-auto text-sm sm:text-base 
+      ${
+        currentPage >= totalPages
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-500 hover:bg-blue-600 text-white transition"
+      }`}
           >
             Next
           </button>

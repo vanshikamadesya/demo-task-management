@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { Task } from "../features/task/TaskType";
+import { Task } from "../features/task/TaskSlice";
 
 const TaskDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,29 +14,32 @@ const TaskDetail = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-transparent -my-20">
-      <div className="max-w-xl w-full p-6 bg-white dark:bg-gray-700 rounded shadow-md">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">{task.title}</h2>
-        
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4 ">
+      <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 shadow-md rounded-md mt-[-140px]">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          {task.title}
+        </h2>
+
         <div
-          className="mt-4 text-gray-700 dark:text-gray-300"
+          className="mt-1 prose dark:prose-invert leading-snug"
           dangerouslySetInnerHTML={{ __html: task.description }}
         />
-  
-        <p className="mt-4 text-gray-800 dark:text-gray-400 font-semibold">
+
+        <p className="text-gray-800 dark:text-gray-300 font-semibold mt-2">
           Status: {task.status}
         </p>
-  
-        <Link
-          to="/"
-          className="block mt-6 text-blue-500 hover:underline text-center"
-        >
-          Back to Task List
-        </Link>
+
+        <div className="mt-4 flex justify-center">
+          <Link
+            to="/"
+            className="bg-blue-500 px-4 py-2 rounded text-white hover:bg-blue-700"
+          >
+            Back to Task List
+          </Link>
+        </div>
       </div>
     </div>
   );
-  
 };
 
 export default TaskDetail;

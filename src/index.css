@@ -111,6 +111,22 @@ html, body {
     background-color: rgba(255, 255, 255, 0.1);
   }
 
+  /* Css for list */
+  .prose ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem;
+  }
+  
+  .prose ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem;
+  }
+  
+  .prose li {
+    margin-bottom: 4px;
+  }
+  
+
 @layer base {
   body {
     @apply bg-gray-100 dark:bg-gray-900;
@@ -120,6 +136,8 @@ html, body {
     @apply dark:bg-gray-800 dark:text-gray-200;
   }
 }
+
+
 
 
 

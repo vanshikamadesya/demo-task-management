@@ -9,19 +9,19 @@ interface TaskEditorProps {
 
 const TaskEditor = ({ value, onChange, className }: TaskEditorProps) => {
   return (
-    <div className={`${className} border border-gray-300 dark:border-gray-600 rounded-lg w-full`}>
+    <div className={`${className} rounded-lg w-full border border-gray-400 dark:border-gray-600 p-2`}>
       <ReactQuill
         theme="snow"
         value={value}
         onChange={onChange}
-        className="!h-auto [&_.ql-editor]:!min-h-[150px] [&_.ql-editor]:!max-h-[300px] 
-                   [&_.ql-editor]:overflow-y-auto [&_.ql-editor]:p-3 
+        className="!h-auto [&_.ql-editor]:!h-[200px] [&_.ql-editor]:max-h-[200px] 
+                   [&_.ql-editor]:overflow-hidden [&_.ql-editor]:p-3 
                    [&_.ql-editor]:bg-white [&_.ql-editor]:text-black 
                    dark:[&_.ql-editor]:bg-gray-800 dark:[&_.ql-editor]:text-white 
-                   [&_.ql-toolbar]:bg-gray-100 [&_.ql-toolbar]:border-gray-300 
-                   dark:[&_.ql-toolbar]:bg-gray-700 dark:[&_.ql-toolbar]:border-gray-600 
+                   [&_.ql-toolbar]:bg-gray-100 [&_.ql-toolbar]:border-none 
+                   dark:[&_.ql-toolbar]:bg-gray-700 dark:[&_.ql-toolbar]:border-none 
                    dark:[&_.ql-toolbar] button:hover:bg-gray-600 
-                   dark:[&_.ql-picker]:text-white dark:[&_.ql-stroke]:stroke-white border"
+                   dark:[&_.ql-picker]:text-white dark:[&_.ql-stroke]:stroke-white"
         modules={{
           toolbar: [
             ["bold", "italic", "underline", "strike"],
@@ -34,17 +34,27 @@ const TaskEditor = ({ value, onChange, className }: TaskEditorProps) => {
       />
       <style>
         {`
+          .ql-container {
+            height: 210px !important;
+            border: none !important;
+          }
+
           .ql-editor {
-            min-height: 150px;
-            max-height: 300px;
-            overflow-y: auto !important; /* Scrollbar when content overflows */
+            height: 200px !important;
+            max-height: 200px !important;
+            overflow-y: hidden;
+          }
+
+          /* Show scrollbar only when there is actual content */
+          .ql-editor:not(:empty) {
+            overflow-y: auto !important;
           }
 
           .ql-editor::placeholder {
-            color: #9ca3af !important; /* Light gray */
+            color: #9ca3af !important;
           }
           .dark .ql-editor::placeholder {
-            color: #d1d5db !important; /* Slightly darker gray for dark mode */
+            color: #d1d5db !important;
           }
 
           .dark .ql-toolbar button svg {
@@ -60,12 +70,6 @@ const TaskEditor = ({ value, onChange, className }: TaskEditorProps) => {
             color: white !important;
           }
 
-          /* Prevent Editor Expansion Issue */
-          .ql-container {
-            height: auto !important;
-          }
-
-          /* Fix Toolbar Overflow on Small Screens */
           @media (max-width: 640px) {
             .ql-toolbar {
               display: flex;
