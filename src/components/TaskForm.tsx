@@ -1,16 +1,21 @@
-import { Formik, Form, Field, FormikHelpers } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { addTask, updateTask } from "../features/task/TaskSlice";
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { RootState } from "../redux/store";
+import { RootState, AppDispatch } from "../redux/store";
 import TaskEditor from "./TaskEditor";
 import { toast } from "react-toastify";
 import { FaSpinner } from "react-icons/fa";
 import { X } from "lucide-react";
-import { Task } from "../features/task/TaskSlice";
+import {
+  Task,
+  updateTask,
+  addTask,
+  fetchTasks,
+} from "../features/task/TaskSlice";
+import { getTasks } from "../redux/mockAPI"; // ✅ Import mock API
 
 // ✅ Validation Schema
 const taskSchema = Yup.object().shape({
@@ -22,14 +27,28 @@ const taskSchema = Yup.object().shape({
 });
 
 const TaskForm = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const tasks = useSelector((state: RootState) => state.task.tasks);
+  const [loading, setLoading] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const dispatch = useDispatch<AppDispatch>(); // Type the dispatch function
+
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const [loading, setLoading] = useState(false);
-  const taskToEdit = id ? tasks.find((task) => task.id === id) : null;
+  // ✅ Fetch the task from mock API if editing
+  useEffect(() => {
+    if (id) {
+      getTasks()
+        .then((tasks) => {
+          const foundTask = tasks.find((task: Task) => task.id === id);
+          if (foundTask) setTaskToEdit(foundTask);
+        })
+        .catch(() => toast.error("Failed to load task"));
+    }
+  }, [id]);
+  useEffect(() => {
+    dispatch(fetchTasks());
+  }, [dispatch]);
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 sm:p-6 md:p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg relative">
@@ -46,38 +65,51 @@ const TaskForm = () => {
       </h2>
 
       <Formik<Task>
+        enableReinitialize
         initialValues={{
           title: taskToEdit?.title || "",
           description: taskToEdit?.description || "",
           status: taskToEdit?.status || "To-Do",
           id: taskToEdit?.id || uuidv4(),
           userId: taskToEdit?.userId || user?.id || "",
+          createdBy: taskToEdit?.createdBy || user?.id || "",
         }}
         validationSchema={taskSchema}
-        onSubmit={(values: Task, { resetForm }: FormikHelpers<Task>) => {
+        onSubmit={async (values: Task, { resetForm }) => {
           if (!user?.id) {
-            toast.error("You must be logged in to add or edit a task.");
+            toast.error("Authentication required");
+            navigate("/login");
             return;
           }
 
-          setLoading(true);
-          new Promise<void>((resolve) => {
-            setTimeout(() => {
-              if (taskToEdit) {
-                dispatch(updateTask({ ...values, userId: user.id }));
-                toast.success("Task updated successfully!");
-              } else {
-                dispatch(addTask({ ...values, id: uuidv4(), userId: user.id }));
-                toast.success("Task added successfully!");
-              }
-              resolve();
-            }, 1500);
-          })
-            .then(() => {
-              resetForm();
-              navigate("/");
-            })
-            .finally(() => setLoading(false));
+          try {
+            setLoading(true);
+            
+            if (taskToEdit) {
+              await dispatch(updateTask({
+                ...values,
+                userId: user.id
+              })).unwrap();
+              toast.success("Task updated successfully!");
+            } else {
+              await dispatch(addTask({
+                title: values.title,
+                description: values.description,
+                status: values.status,
+                createdBy: user.id,
+                userId: user.id
+              })).unwrap();
+              toast.success("Task added successfully!");
+            }
+            
+            resetForm();
+            navigate("/");
+          } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Operation failed";
+            toast.error(message);
+          } finally {
+            setLoading(false);
+          }
         }}
       >
         {(formik) => {
