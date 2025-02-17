@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { Task } from "../features/task/TaskSlice";
+import "react-quill/dist/quill.snow.css"; 
 
 const TaskDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,16 +15,18 @@ const TaskDetail = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4 ">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4">
       <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 shadow-md rounded-md mt-[-140px]">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           {task.title}
         </h2>
 
+        {/* Ensure correct rendering of sublists */}
         <div
-          className="mt-1 prose dark:prose-invert leading-snug"
+          className="mt-1 prose dark:prose-invert leading-snug ql-editor"
           dangerouslySetInnerHTML={{ __html: task.description }}
         />
+
 
         <p className="text-gray-800 dark:text-gray-300 font-semibold mt-2">
           Status: {task.status}
